@@ -1,29 +1,39 @@
 package world
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCalculateDistance(t *testing.T) {
-	p1 := Position{}
-	p2 := Position{}
-	assert.EqualValues(t, 0, CalculateDistance(p1, p2))
-	assert.EqualValues(t, 0, CalculateDistance(p2, p1))
+func FuzzGetNeighbors(f *testing.F) {
+	f.Add(int64(0), int64(0))
+	f.Add(int64(3), int64(-4))
+	f.Add(int64(-100), int64(777))
 
-	p1 = Position{X: 5}
-	p2 = Position{X: 11}
-	assert.EqualValues(t, 6, CalculateDistance(p1, p2))
-	assert.EqualValues(t, 6, CalculateDistance(p2, p1))
+	f.Fuzz(func(t *testing.T, x int64, y int64) {
+		actual := Position{x, y}.GetNeighbors()
+		assert.Contains(t, actual, Position{x, y - 1}) // north
+		assert.Contains(t, actual, Position{x, y + 1}) // south
+		assert.Contains(t, actual, Position{x - 1, y}) // east
+		assert.Contains(t, actual, Position{x + 1, y}) // west
+	})
+}
 
-	p1 = Position{X: 20, Y: -5}
-	p2 = Position{X: 23, Y: -1}
-	assert.EqualValues(t, 5, CalculateDistance(p1, p2))
-	assert.EqualValues(t, 5, CalculateDistance(p2, p1))
+func FuzzCalculateDistance(f *testing.F) {
+	f.Add(int64(0), int64(0), int64(0), int64(0))
+	f.Add(int64(5), int64(0), int64(11), int64(0))
+	f.Add(int64(20), int64(-5), int64(23), int64(-1))
 
-	p1 = Position{X: 6, Y: 4, Z: -3}
-	p2 = Position{X: 2, Y: -8, Z: 3}
-	assert.EqualValues(t, 14, CalculateDistance(p1, p2))
-	assert.EqualValues(t, 14, CalculateDistance(p2, p1))
+	f.Fuzz(func(t *testing.T, x1 int64, y1 int64, x2 int64, y2 int64) {
+		p1 := Position{x1, y1}
+		p2 := Position{x2, y2}
+
+		xDist := x2 - x1
+		yDist := y2 - y1
+		actual := math.Sqrt(math.Pow(float64(xDist), 2) + math.Pow(float64(yDist), 2))
+		assert.Equal(t, actual, CalculateDistance(p1, p2))
+		assert.Equal(t, actual, CalculateDistance(p2, p1))
+	})
 }

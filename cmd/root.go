@@ -25,6 +25,7 @@ func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})
 
-	rootCmd.PersistentFlags().Uint64P("seed", "s", 0, "set seed for random terrain generation")
+	rootCmd.PersistentFlags().Uint64P("seed", "s", 0, "set seed for random world generation")
+	rootCmd.PersistentFlags().Uint8P("radius", "r", 20, "set radius for fog-of-war that obscures unexplored terrain")
 	rootCmd.PersistentFlags().Bool("no-fog", false, "disable fog-of-war that obscures unexplored terrain")
 }

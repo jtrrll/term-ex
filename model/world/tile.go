@@ -1,16 +1,16 @@
 package world
 
-// A three-dimensional cube of terrain
+// A two-dimensional square of terrain
 type Tile struct {
 	Terrain Terrain
+	Height  int8
 }
 
 // The types of terrain
 type Terrain int
 
 const (
-	Air Terrain = iota
+	Ocean Terrain = iota
+	Shore
 	Grass
-	Water
-	Mountain
 )

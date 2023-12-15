@@ -8,14 +8,21 @@ type Position struct {
 	Y int64 // The y component of the position
 }
 
-// Returns a list of the position's neighbors
-func (p Position) GetNeighbors() [4]Position {
-	return [4]Position{
-		{p.X, p.Y - 1}, // north
-		{p.X, p.Y + 1}, // south
-		{p.X - 1, p.Y}, // east
-		{p.X + 1, p.Y}, // west
+// Returns a set of positions within a radius around this position.
+// Time complexity: O(n^2)
+func (p Position) GetSurrounding(radius uint64) []Position {
+	positions := []Position{}
+	for x := p.X - int64(radius); x <= p.X+int64(radius); x++ {
+		for y := p.Y - int64(radius); y <= p.Y+int64(radius); y++ {
+			if x != p.X || y != p.Y {
+				position := Position{x, y}
+				if CalculateDistance(p, position) <= float64(radius) {
+					positions = append(positions, position)
+				}
+			}
+		}
 	}
+	return positions
 }
 
 // Calculates the distance between two positions

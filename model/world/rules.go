@@ -1,6 +1,8 @@
 package world
 
-import "term-ex/util"
+import (
+	"term-ex/util"
+)
 
 // A rule that calculates valid tile possibilities for a position
 type Rule func(Position, World) []Tile

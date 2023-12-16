@@ -8,8 +8,7 @@ type Position struct {
 	Y int64 // The y component of the position
 }
 
-// Returns a set of positions within a radius around this position.
-// Time complexity: O(n^2)
+// Returns a set of positions within a radius around this position
 func (p Position) GetSurrounding(radius uint64) []Position {
 	positions := []Position{}
 	for x := p.X - int64(radius); x <= p.X+int64(radius); x++ {

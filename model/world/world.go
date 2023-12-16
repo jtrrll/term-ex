@@ -1,6 +1,7 @@
 package world
 
 import (
+	"math"
 	"math/rand"
 )
 
@@ -47,17 +48,24 @@ func (w *World) collapse(collapseCenter Position, collapseRadius uint8, genRadiu
 	if !found {
 		return false
 	}
-	// 2. Collapse position into a single tile state
+	// 2. If a non-cached position is selected, generate possibilities
 	possibleTiles := w.tileMap[position]
+	if len(possibleTiles) == 0 {
+		possibleTiles = w.generationRules.ApplyAll(position, *w)
+		if len(possibleTiles) == 0 {
+			possibleTiles = []Tile{w.defaultTile}
+		}
+	}
+	// 3. Collapse position into a single tile state
 	selectedTile := possibleTiles[rand.Intn(len(possibleTiles))]
 	w.tileMap[position] = []Tile{selectedTile}
-	// 3. Update possibilities for all positions in the generation radius
+	// 4. Update and cache possibilities for all positions in the generation radius
 	for _, neighbor := range position.GetSurrounding(uint64(genRadius)) {
-		// 3.1. Skip if already collapsed
+		// 4.1. Skip if already collapsed
 		if len(w.tileMap[neighbor]) == 1 {
 			continue
 		}
-		// 3.2. Generate possibilities
+		// 4.2. Generate possibilities and cache them
 		neighborPossibleTiles := w.generationRules.ApplyAll(neighbor, *w)
 		if len(neighborPossibleTiles) == 0 {
 			neighborPossibleTiles = []Tile{w.defaultTile}
@@ -68,16 +76,22 @@ func (w *World) collapse(collapseCenter Position, collapseRadius uint8, genRadiu
 }
 
 // Finds the uncollapsed position with the lowest number of possible states within a specific radius.
-// Returns false if no uncollapsed positions are found.
-// Time complexity: O(n)
+// Returns false if no uncollapsed positions are found
 func (w *World) findLeastEntropicPosition(center Position, radius uint8) (Position, bool) {
 	leastEntropicPosition := Position{}
+	leastEntropy := 0
 	found := false
-	for position, possibilities := range w.tileMap {
-		if len(possibilities) > 1 {
-			if !found || len(possibilities) < len(w.tileMap[leastEntropicPosition]) {
+	for _, position := range append(center.GetSurrounding(uint64(radius)), center) {
+		possibilities := w.tileMap[position]
+		entropy := len(possibilities)
+		if entropy == 0 {
+			entropy = math.MaxInt
+		}
+		if entropy > 1 {
+			if !found || entropy < leastEntropy {
 				if CalculateDistance(center, position) <= float64(radius) {
 					leastEntropicPosition = position
+					leastEntropy = entropy
 					found = true
 				}
 			}

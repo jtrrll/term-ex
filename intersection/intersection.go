@@ -1,4 +1,4 @@
-package util
+package intersection
 
 // Creates a new slice containing elements present in every given slice
 func Intersection[T comparable](slices ...[]T) []T {

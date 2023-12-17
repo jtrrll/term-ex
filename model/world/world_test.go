@@ -1,39 +1,41 @@
 package world
 
 import (
+	"term-ex/position"
+	"term-ex/tile"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewWorldWithNoRules(t *testing.T) {
-	world := NewWorld(Rules{}, Tile{Terrain: 0}, Position{}, Tile{Terrain: 1}, 0, 0)
+	world := NewWorld(Rules{}, tile.Tile{Terrain: 0}, position.Position{}, tile.Tile{Terrain: 1}, 0, 0)
 	assert.Len(t, world.tileMap, 1)
-	tile, ok := world.Get(Position{})
+	ti, ok := world.Get(position.Position{})
 	assert.True(t, ok)
-	assert.Equal(t, Tile{Terrain: 1}, tile)
+	assert.Equal(t, tile.Tile{Terrain: 1}, ti)
 
-	world = NewWorld(Rules{}, Tile{Terrain: 0}, Position{}, Tile{Terrain: 1}, 2, 0)
+	world = NewWorld(Rules{}, tile.Tile{Terrain: 0}, position.Position{}, tile.Tile{Terrain: 1}, 2, 0)
 	assert.Len(t, world.tileMap, 13)
 	for i := range world.tileMap {
-		tile, ok := world.Get(i)
+		ti, ok := world.Get(i)
 		assert.True(t, ok)
-		if (i == Position{}) {
-			assert.Equal(t, Tile{Terrain: 1}, tile)
+		if (i == position.Position{}) {
+			assert.Equal(t, tile.Tile{Terrain: 1}, ti)
 		} else {
-			assert.Equal(t, Tile{Terrain: 0}, tile)
+			assert.Equal(t, tile.Tile{Terrain: 0}, ti)
 		}
 	}
 
-	world = NewWorld(Rules{}, Tile{Terrain: 2}, Position{}, Tile{Terrain: 1}, 3, 1)
+	world = NewWorld(Rules{}, tile.Tile{Terrain: 2}, position.Position{}, tile.Tile{Terrain: 1}, 3, 1)
 	assert.Len(t, world.tileMap, 45)
 	for i := range world.tileMap {
-		tile, ok := world.Get(i)
+		ti, ok := world.Get(i)
 		assert.True(t, ok)
-		if (i == Position{}) {
-			assert.Equal(t, Tile{Terrain: 1}, tile)
+		if (i == position.Position{}) {
+			assert.Equal(t, tile.Tile{Terrain: 1}, ti)
 		} else {
-			assert.Equal(t, Tile{Terrain: 2}, tile)
+			assert.Equal(t, tile.Tile{Terrain: 2}, ti)
 		}
 	}
 }

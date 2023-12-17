@@ -1,4 +1,4 @@
-package world
+package tile
 
 // A two-dimensional square of terrain
 type Tile struct {

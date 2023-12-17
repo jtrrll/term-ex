@@ -4,5 +4,7 @@ import "term-ex/model"
 
 // Defines functionality exposed by all term-ex views
 type View interface {
-	Update(model.Model) // Updates the view with the most recent state
+	RenderModel(model.Model) // Renders the provided model
+	RenderSplash()           // Renders a splash screen
+	RenderExit()             // Renders an exit screen
 }

@@ -2,6 +2,7 @@ package world
 
 import (
 	"term-ex/position"
+	"term-ex/tile"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +13,7 @@ func TestNewWorldWithNoRules(t *testing.T) {
 	assert.Len(t, world.tileMap, 1)
 	ti, ok := world.Get(position.Position{})
 	assert.True(t, ok)
-	assert.Equal(t, 1, ti)
+	assert.Equal(t, tile.Tile(1), ti)
 
 	world = NewWorld(Rules{}, 0, 1, 2, 0)
 	assert.Len(t, world.tileMap, 13)
@@ -20,9 +21,9 @@ func TestNewWorldWithNoRules(t *testing.T) {
 		ti, ok := world.Get(i)
 		assert.True(t, ok)
 		if (i == position.Position{}) {
-			assert.Equal(t, 1, ti)
+			assert.Equal(t, tile.Tile(1), ti)
 		} else {
-			assert.Equal(t, 0, ti)
+			assert.Equal(t, tile.Tile(0), ti)
 		}
 	}
 
@@ -32,9 +33,9 @@ func TestNewWorldWithNoRules(t *testing.T) {
 		ti, ok := world.Get(i)
 		assert.True(t, ok)
 		if (i == position.Position{}) {
-			assert.Equal(t, 1, ti)
+			assert.Equal(t, tile.Tile(1), ti)
 		} else {
-			assert.Equal(t, 2, ti)
+			assert.Equal(t, tile.Tile(2), ti)
 		}
 	}
 }

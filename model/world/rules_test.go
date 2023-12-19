@@ -21,19 +21,19 @@ func TestApplyAll(t *testing.T) {
 
 	actual1 := Rules{rule1}.ApplyAll(position.Position{}, World{})
 	assert.Len(t, actual1, 3)
-	assert.Contains(t, actual1, 0)
-	assert.Contains(t, actual1, 1)
-	assert.Contains(t, actual1, 2)
+	assert.Contains(t, actual1, tile.Tile(0))
+	assert.Contains(t, actual1, tile.Tile(1))
+	assert.Contains(t, actual1, tile.Tile(2))
 
 	actual2 := Rules{rule1, rule1, rule1}.ApplyAll(position.Position{}, World{})
 	assert.Len(t, actual2, 3)
-	assert.Contains(t, actual2, 0)
-	assert.Contains(t, actual2, 1)
-	assert.Contains(t, actual2, 2)
+	assert.Contains(t, actual2, tile.Tile(0))
+	assert.Contains(t, actual2, tile.Tile(1))
+	assert.Contains(t, actual2, tile.Tile(2))
 
 	actual3 := Rules{rule1, rule2}.ApplyAll(position.Position{}, World{})
 	assert.Len(t, actual3, 1)
-	assert.Contains(t, actual3, 0)
+	assert.Contains(t, actual3, tile.Tile(0))
 
 	actual4 := Rules{rule1, rule3}.ApplyAll(position.Position{}, World{})
 	assert.Len(t, actual4, 0)

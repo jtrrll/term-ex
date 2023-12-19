@@ -1,16 +1,14 @@
 package tile
 
-// A two-dimensional square of terrain
-type Tile struct {
-	Terrain Terrain
-	Height  int8
-}
-
-// The types of terrain
-type Terrain int
+// The types of tile
+type Tile int
 
 const (
-	Ocean Terrain = iota
-	Shore
+	Ocean Tile = iota
+	Sand
 	Grass
+	Dirt
+	Path
+	Mountain
+	Wall
 )

@@ -16,13 +16,13 @@ type RuleBasedModel struct {
 }
 
 // Creates a new model that generates a world according to specified rules
-func NewRuleBasedModel(generationRules world.Rules, defaultTile tile.Tile, startingPosition position.Position, startingTile tile.Tile, collapseRadius uint8, genRadius uint8) *RuleBasedModel {
+func NewRuleBasedModel(generationRules world.Rules, defaultTile tile.Tile, startingTile tile.Tile, collapseRadius uint8, genRadius uint8) *RuleBasedModel {
 	return &RuleBasedModel{
 		collapseRadius: collapseRadius,
 		genRadius:      genRadius,
-		world:          world.NewWorld(generationRules, defaultTile, startingPosition, startingTile, collapseRadius, genRadius),
-		position:       startingPosition,
-		visited:        map[position.Position]struct{}{startingPosition: {}},
+		world:          world.NewWorld(generationRules, defaultTile, startingTile, collapseRadius, genRadius),
+		position:       position.Position{},
+		visited:        map[position.Position]struct{}{{}: {}},
 	}
 }
 
@@ -45,34 +45,76 @@ func (m *RuleBasedModel) HasVisited(position position.Position) bool {
 
 // Moves the explorer in the negative y direction
 func (m *RuleBasedModel) MoveNorth(distance int64) Model {
-	// 1. Update position
+	// 1. Check move validity
+	nextTile, ok := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y - distance})
+	if !ok {
+		return m
+	}
+	_, ok = blockingTiles[nextTile]
+	if ok {
+		return m
+	}
+	// 2. Update position
 	m.position.Y -= distance
 	m.visited[m.position] = struct{}{}
-	// 2. Generate new tiles
+	// 3. Generate new tiles
 	m.world.CollapseAll(m.position, m.collapseRadius, m.genRadius)
 	return m
 }
 
 // Moves the explorer in the positive y direction
 func (m *RuleBasedModel) MoveSouth(distance int64) Model {
+	// 1. Check move validity
+	nextTile, ok := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y + distance})
+	if !ok {
+		return m
+	}
+	_, ok = blockingTiles[nextTile]
+	if ok {
+		return m
+	}
+	// 2. Update position
 	m.position.Y += distance
 	m.visited[m.position] = struct{}{}
+	// 3. Generate new tiles
 	m.world.CollapseAll(m.position, m.collapseRadius, m.genRadius)
 	return m
 }
 
 // Moves the explorer in the negative x direction
 func (m *RuleBasedModel) MoveWest(distance int64) Model {
+	// 1. Check move validity
+	nextTile, ok := m.GetTile(position.Position{X: m.position.X - distance, Y: m.position.Y})
+	if !ok {
+		return m
+	}
+	_, ok = blockingTiles[nextTile]
+	if ok {
+		return m
+	}
+	// 2. Update position
 	m.position.X -= distance
 	m.visited[m.position] = struct{}{}
+	// 3. Generate new tiles
 	m.world.CollapseAll(m.position, m.collapseRadius, m.genRadius)
 	return m
 }
 
 // Moves the explorer in the positive x direction
 func (m *RuleBasedModel) MoveEast(distance int64) Model {
+	// 1. Check move validity
+	nextTile, ok := m.GetTile(position.Position{X: m.position.X + distance, Y: m.position.Y})
+	if !ok {
+		return m
+	}
+	_, ok = blockingTiles[nextTile]
+	if ok {
+		return m
+	}
+	// 2. Update position
 	m.position.X += distance
 	m.visited[m.position] = struct{}{}
+	// 3. Generate new tiles
 	m.world.CollapseAll(m.position, m.collapseRadius, m.genRadius)
 	return m
 }

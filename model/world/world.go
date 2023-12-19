@@ -15,12 +15,12 @@ type World struct {
 }
 
 // Creates a new world that follows defined generation rules
-func NewWorld(generationRules Rules, defaultTile tile.Tile, startingPosition position.Position, startingTile tile.Tile, startingRadius uint8, genRadius uint8) World {
+func NewWorld(generationRules Rules, defaultTile tile.Tile, startingTile tile.Tile, startingRadius uint8, genRadius uint8) World {
 	// 1. Create empty world
 	world := World{generationRules, defaultTile, map[position.Position][]tile.Tile{}}
 	// 2. Collapse the starting position and the radius around it
-	world.tileMap[startingPosition] = []tile.Tile{startingTile, startingTile}
-	world.CollapseAll(startingPosition, startingRadius, genRadius)
+	world.tileMap[position.Position{}] = []tile.Tile{startingTile, startingTile}
+	world.CollapseAll(position.Position{}, startingRadius, genRadius)
 	return world
 }
 
@@ -30,7 +30,7 @@ func (w *World) Get(position position.Position) (tile.Tile, bool) {
 	if ok && len(possibilities) == 1 {
 		return possibilities[0], true
 	}
-	return tile.Tile{}, false
+	return 0, false
 }
 
 // Collapses all uncollapsed positions within a specific radius

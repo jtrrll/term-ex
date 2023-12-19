@@ -4,8 +4,6 @@ import (
 	"term-ex/controller"
 	"term-ex/model"
 	"term-ex/model/world"
-	"term-ex/position"
-	"term-ex/tile"
 	"term-ex/view"
 
 	"github.com/gdamore/tcell"
@@ -46,9 +44,9 @@ var keyboardCmd = &cobra.Command{
 				}
 			}
 		}()
-		model := model.NewRuleBasedModel(world.Rules{}, tile.Tile{Terrain: 0}, position.Position{}, tile.Tile{Terrain: 1}, 3, 0)
-		view := view.NewTextView(screen, !noFog, 10, false, false)
-		return controller.NewInputExplorer(inputChan, model, view).Explore()
+		model := model.NewRuleBasedModel(world.Rules{world.SandBetweenOceanAndGrass}, 0, 3, 20, 5)
+		view := view.NewTextView(screen, !noFog, 10)
+		return controller.NewInputExplorer(inputChan, model, view, true).Explore()
 	},
 }
 

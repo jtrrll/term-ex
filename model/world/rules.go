@@ -21,7 +21,27 @@ func (rules Rules) ApplyAll(position position.Position, world World) []tile.Tile
 	return intersection.Intersection(allPossibilities...)
 }
 
-// Returns three possible tiles, ocean, shore, and grass, all of height=0
-func OceanShoreGrass(position.Position, World) []tile.Tile {
-	return []tile.Tile{{Terrain: tile.Ocean}, {Terrain: tile.Shore}, {Terrain: tile.Grass}}
+// Returns three possible tiles, ocean, sand, and grass, all of height=0
+func OceanSandGrass(position position.Position, world World) []tile.Tile {
+	return []tile.Tile{tile.Ocean, tile.Sand, tile.Grass}
+}
+
+// Returns two possible tiles, sand and ocean, all of height=0
+func SandOcean(position position.Position, world World) []tile.Tile {
+	return []tile.Tile{tile.Sand, tile.Ocean}
+}
+
+// Returns three possible tiles, ocean, sand, and grass, all of height=0
+func SandBetweenOceanAndGrass(position position.Position, world World) []tile.Tile {
+	for _, pos := range position.GetSurrounding(1) {
+		ti, ok := world.Get(pos)
+		if ok {
+			if ti == tile.Ocean {
+				return []tile.Tile{tile.Ocean, tile.Sand}
+			} else if ti == tile.Grass {
+				return []tile.Tile{tile.Sand, tile.Grass}
+			}
+		}
+	}
+	return []tile.Tile{tile.Ocean, tile.Sand, tile.Grass}
 }

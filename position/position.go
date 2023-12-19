@@ -1,4 +1,4 @@
-package world
+package position
 
 import "math"
 
@@ -22,6 +22,11 @@ func (p Position) GetSurrounding(radius uint64) []Position {
 		}
 	}
 	return positions
+}
+
+// Calculates the distance to another position
+func (p Position) DistanceTo(other Position) float64 {
+	return CalculateDistance(p, other)
 }
 
 // Calculates the distance between two positions

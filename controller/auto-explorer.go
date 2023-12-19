@@ -17,16 +17,17 @@ type AutoExplorer struct {
 }
 
 // Creates a new auto-explorer that explores based on a predefined strategy
-func NewAutoExplorer(model model.Model, view view.View, strategy func(model.Model) Command, delay time.Duration) AutoExplorer {
-	return AutoExplorer{model, view, strategy, delay}
+func NewAutoExplorer(model model.Model, view view.View, strategy func(model.Model) Command, delay time.Duration) *AutoExplorer {
+	return &AutoExplorer{model, view, strategy, delay}
 }
 
 // Explores the model based on the predefined strategy, waiting for a set period of time between actions.
 // Panics if no strategy is defined
-func (e *AutoExplorer) Explore() {
+func (e *AutoExplorer) Explore() error {
 	if e.strategy == nil {
 		panic("exploration strategy not defined")
 	}
 	fmt.Println("exploring!")
 	//TODO: Implement
+	return nil
 }

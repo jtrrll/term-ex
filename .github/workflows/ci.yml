@@ -9,7 +9,6 @@ on:
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,7 +32,6 @@ jobs:
         run: make
 
   unit-test:
-    name: Run unit tests
     runs-on: ubuntu-latest
     strategy:
       matrix:

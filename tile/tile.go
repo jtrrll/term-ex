@@ -1,14 +1,28 @@
 package tile
 
+import (
+	mapset "github.com/deckarep/golang-set/v2"
+)
+
 // The types of tile
 type Tile int
 
 const (
-	Ocean Tile = iota
+	Fog Tile = iota
+
+	Ocean
+	Water
+
 	Sand
-	Grass
 	Dirt
+	Grass
 	Path
+
+	Tree
 	Mountain
-	Wall
 )
+
+// Returns a set of all tiles (excluding the zero value, Fog)
+func GetAllTiles() mapset.Set[Tile] {
+	return mapset.NewSet(Ocean, Water, Sand, Dirt, Grass, Path, Tree, Mountain)
+}

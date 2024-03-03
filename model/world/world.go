@@ -5,21 +5,23 @@ import (
 	"math/rand"
 	"term-ex/position"
 	"term-ex/tile"
+
+	mapset "github.com/deckarep/golang-set/v2"
 )
 
 // A two-dimensional, explorable world
 type World struct {
-	generationRules Rules                             // rules that define valid tile possibilities for each position
-	defaultTile     tile.Tile                         // the tile to use when generation rules fail to agree
-	tileMap         map[position.Position][]tile.Tile // the mapping of positions to tile possibilities
+	generationRules Rules                                       // rules that define valid tile possibilities for each position
+	defaultTile     tile.Tile                                   // the tile to use when generation rules fail to agree
+	tileMap         map[position.Position]mapset.Set[tile.Tile] // the mapping of positions to tile possibilities
 }
 
 // Creates a new world that follows defined generation rules
 func NewWorld(generationRules Rules, defaultTile tile.Tile, startingTile tile.Tile, startingRadius uint8, genRadius uint8) World {
 	// 1. Create empty world
-	world := World{generationRules, defaultTile, map[position.Position][]tile.Tile{}}
+	world := World{generationRules, defaultTile, map[position.Position]mapset.Set[tile.Tile]{}}
 	// 2. Collapse the starting position and the radius around it
-	world.tileMap[position.Position{}] = []tile.Tile{startingTile, startingTile}
+	world.tileMap[position.Position{}] = mapset.NewSet(startingTile, defaultTile)
 	world.CollapseAll(position.Position{}, startingRadius, genRadius)
 	return world
 }
@@ -27,10 +29,22 @@ func NewWorld(generationRules Rules, defaultTile tile.Tile, startingTile tile.Ti
 // Gets the tile at the specified position if it is collapsed, returns false otherwise
 func (w *World) Get(position position.Position) (tile.Tile, bool) {
 	possibilities, ok := w.tileMap[position]
-	if ok && len(possibilities) == 1 {
-		return possibilities[0], true
+	if ok && possibilities.Cardinality() == 1 {
+		return possibilities.ToSlice()[rand.Intn(possibilities.Cardinality())], true
 	}
 	return 0, false
+}
+
+// Gets a set of all tiles and their frequency at the specified positions if they are collapsed
+func (w *World) GetTileFrequencies(positions mapset.Set[position.Position]) map[tile.Tile]uint64 {
+	freq := map[tile.Tile]uint64{}
+	for pos := range positions.Iter() {
+		ti, ok := w.Get(pos)
+		if ok {
+			freq[ti] += 1
+		}
+	}
+	return freq
 }
 
 // Collapses all uncollapsed positions within a specific radius
@@ -51,26 +65,24 @@ func (w *World) collapse(collapseCenter position.Position, collapseRadius uint8,
 		return false
 	}
 	// 2. If a non-cached position is selected, generate possibilities
-	possibleTiles := w.tileMap[position]
-	if len(possibleTiles) == 0 {
-		possibleTiles = w.generationRules.ApplyAll(position, *w)
-		if len(possibleTiles) == 0 {
-			possibleTiles = []tile.Tile{w.defaultTile}
-		}
+	possibleTiles := w.generationRules.ApplyAll(position, *w)
+	if possibleTiles.Cardinality() == 0 {
+		possibleTiles = mapset.NewSet(w.defaultTile)
 	}
 	// 3. Collapse position into a single tile state
-	selectedTile := possibleTiles[rand.Intn(len(possibleTiles))]
-	w.tileMap[position] = []tile.Tile{selectedTile}
+	selectedTile := possibleTiles.ToSlice()[rand.Intn(possibleTiles.Cardinality())]
+	w.tileMap[position] = mapset.NewSet(selectedTile)
 	// 4. Update and cache possibilities for all positions in the generation radius
-	for _, neighbor := range position.GetSurrounding(uint64(genRadius)) {
+	for neighbor := range position.GetSurrounding(uint64(genRadius)).Iter() {
 		// 4.1. Skip if already collapsed
-		if len(w.tileMap[neighbor]) == 1 {
+		possibilities, ok := w.tileMap[neighbor]
+		if ok && possibilities.Cardinality() == 1 {
 			continue
 		}
 		// 4.2. Generate possibilities and cache them
 		neighborPossibleTiles := w.generationRules.ApplyAll(neighbor, *w)
-		if len(neighborPossibleTiles) == 0 {
-			neighborPossibleTiles = []tile.Tile{w.defaultTile}
+		if neighborPossibleTiles.Cardinality() == 0 {
+			neighborPossibleTiles = mapset.NewSet(w.defaultTile)
 		}
 		w.tileMap[neighbor] = neighborPossibleTiles
 	}
@@ -83,11 +95,13 @@ func (w *World) findLeastEntropicPosition(center position.Position, radius uint8
 	leastEntropicPosition := position.Position{}
 	leastEntropy := 0
 	found := false
-	for _, posn := range append(center.GetSurrounding(uint64(radius)), center) {
-		possibilities := w.tileMap[posn]
-		entropy := len(possibilities)
-		if entropy == 0 {
-			entropy = math.MaxInt
+	searchZone := center.GetSurrounding(uint64(radius))
+	searchZone.Add(center)
+	for posn := range searchZone.Iter() {
+		entropy := math.MaxInt
+		possibilities, ok := w.tileMap[posn]
+		if ok {
+			entropy = possibilities.Cardinality()
 		}
 		if entropy > 1 {
 			if !found || entropy < leastEntropy {

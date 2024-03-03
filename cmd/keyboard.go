@@ -44,7 +44,7 @@ var keyboardCmd = &cobra.Command{
 				}
 			}
 		}()
-		model := model.NewRuleBasedModel(world.Rules{world.SandBetweenOceanAndGrass}, 0, 3, 20, 5)
+		model := model.NewRuleBasedModel(world.Rules{world.SmoothOceans, world.ClumpNeighbors, world.LeveledTerrain, world.StartOnGrassland}, 0, 4, 30, 1)
 		view := view.NewTextView(screen, !noFog, 10)
 		return controller.NewInputExplorer(inputChan, model, view, true).Explore()
 	},

@@ -7,8 +7,8 @@ import (
 // These tiles cannot be walked through
 var (
 	blockingTiles = map[tile.Tile]struct{}{
-		tile.Ocean:    {},
-		tile.Mountain: {},
-		tile.Wall:     {},
+		//tile.Ocean:    {},
+		//tile.Mountain: {},
+		//tile.Tree:     {},
 	}
 )

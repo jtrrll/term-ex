@@ -1,6 +1,10 @@
 package position
 
-import "math"
+import (
+	"math"
+
+	mapset "github.com/deckarep/golang-set/v2"
+)
 
 // A two-dimensional, 64-bit integer position
 type Position struct {
@@ -9,14 +13,14 @@ type Position struct {
 }
 
 // Returns a set of positions within a radius around this position
-func (p Position) GetSurrounding(radius uint64) []Position {
-	positions := []Position{}
+func (p Position) GetSurrounding(radius uint64) mapset.Set[Position] {
+	positions := mapset.NewSet[Position]()
 	for x := p.X - int64(radius); x <= p.X+int64(radius); x++ {
 		for y := p.Y - int64(radius); y <= p.Y+int64(radius); y++ {
 			if x != p.X || y != p.Y {
 				position := Position{x, y}
 				if CalculateDistance(p, position) <= float64(radius) {
-					positions = append(positions, position)
+					positions.Add(position)
 				}
 			}
 		}

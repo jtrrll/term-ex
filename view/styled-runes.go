@@ -14,12 +14,14 @@ type StyledRune struct {
 
 var (
 	styledRunes = map[tile.Tile]StyledRune{
-		tile.Ocean:    {'/', tcell.StyleDefault.Foreground(tcell.ColorBlue)},
+		tile.Fog:      {' ', tcell.StyleDefault},
+		tile.Ocean:    {'~', tcell.StyleDefault.Foreground(tcell.ColorDodgerBlue)},
+		tile.Water:    {'~', tcell.StyleDefault.Foreground(tcell.ColorDeepSkyBlue)},
 		tile.Sand:     {'.', tcell.StyleDefault.Foreground(tcell.ColorTan)},
-		tile.Grass:    {'"', tcell.StyleDefault.Foreground(tcell.ColorDarkGreen)},
 		tile.Dirt:     {'.', tcell.StyleDefault.Foreground(tcell.ColorSaddleBrown)},
+		tile.Grass:    {'"', tcell.StyleDefault.Foreground(tcell.ColorDarkGreen)},
 		tile.Path:     {':', tcell.StyleDefault.Foreground(tcell.ColorSaddleBrown)},
+		tile.Tree:     {'*', tcell.StyleDefault.Foreground(tcell.ColorDarkGreen)},
 		tile.Mountain: {'^', tcell.StyleDefault.Foreground(tcell.ColorGray)},
-		tile.Wall:     {'#', tcell.StyleDefault.Foreground(tcell.ColorTan)},
 	}
 )

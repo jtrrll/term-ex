@@ -45,20 +45,14 @@ func (v *TextView) RenderModel(model model.Model) {
 	yOffset := int(modelCenter.Y) - height/2
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			//TODO: Fog-of-war, tile set, height
-			ti, _ := model.GetTile(position.Position{X: int64(x + xOffset), Y: int64(y + yOffset)})
-			var char rune
-			var style tcell.Style
-
+			//TODO: Fog-of-war, height
+			ti := model.GetTile(position.Position{X: int64(x + xOffset), Y: int64(y + yOffset)})
 			styledRune := styledRunes[ti]
-			char = styledRune.Rune
-			style = styledRune.Style
 			if x == width/2 && y == height/2 {
-				char = 'c'
-				style = style.Foreground(tcell.ColorMediumVioletRed).Bold(true)
+				styledRune.Rune = 'c'
+				styledRune.Style = tcell.StyleDefault.Foreground(tcell.ColorMediumVioletRed).Bold(true)
 			}
-			v.screen.SetContent(x, y, char, []rune{}, style)
-
+			v.screen.SetContent(x, y, styledRune.Rune, []rune{}, styledRune.Style)
 		}
 	}
 	v.screen.Show()

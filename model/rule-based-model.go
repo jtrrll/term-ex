@@ -31,10 +31,13 @@ func (m *RuleBasedModel) GetPosition() position.Position {
 	return m.position
 }
 
-// Gets the tile at the specified position if it exists, returns false otherwise
-func (m *RuleBasedModel) GetTile(position position.Position) (tile.Tile, bool) {
-	tile, ok := m.world.Get(position)
-	return tile, ok
+// Gets the tile at the specified position if it exists, returns a fog tile otherwise
+func (m *RuleBasedModel) GetTile(position position.Position) tile.Tile {
+	ti, ok := m.world.Get(position)
+	if !ok {
+		return tile.Fog
+	}
+	return ti
 }
 
 // Determines if the explorer has visited the specified position
@@ -46,11 +49,8 @@ func (m *RuleBasedModel) HasVisited(position position.Position) bool {
 // Moves the explorer in the negative y direction
 func (m *RuleBasedModel) MoveNorth(distance int64) Model {
 	// 1. Check move validity
-	nextTile, ok := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y - distance})
-	if !ok {
-		return m
-	}
-	_, ok = blockingTiles[nextTile]
+	nextTile := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y - distance})
+	_, ok := blockingTiles[nextTile]
 	if ok {
 		return m
 	}
@@ -65,11 +65,8 @@ func (m *RuleBasedModel) MoveNorth(distance int64) Model {
 // Moves the explorer in the positive y direction
 func (m *RuleBasedModel) MoveSouth(distance int64) Model {
 	// 1. Check move validity
-	nextTile, ok := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y + distance})
-	if !ok {
-		return m
-	}
-	_, ok = blockingTiles[nextTile]
+	nextTile := m.GetTile(position.Position{X: m.position.X, Y: m.position.Y + distance})
+	_, ok := blockingTiles[nextTile]
 	if ok {
 		return m
 	}
@@ -84,11 +81,8 @@ func (m *RuleBasedModel) MoveSouth(distance int64) Model {
 // Moves the explorer in the negative x direction
 func (m *RuleBasedModel) MoveWest(distance int64) Model {
 	// 1. Check move validity
-	nextTile, ok := m.GetTile(position.Position{X: m.position.X - distance, Y: m.position.Y})
-	if !ok {
-		return m
-	}
-	_, ok = blockingTiles[nextTile]
+	nextTile := m.GetTile(position.Position{X: m.position.X - distance, Y: m.position.Y})
+	_, ok := blockingTiles[nextTile]
 	if ok {
 		return m
 	}
@@ -103,11 +97,8 @@ func (m *RuleBasedModel) MoveWest(distance int64) Model {
 // Moves the explorer in the positive x direction
 func (m *RuleBasedModel) MoveEast(distance int64) Model {
 	// 1. Check move validity
-	nextTile, ok := m.GetTile(position.Position{X: m.position.X + distance, Y: m.position.Y})
-	if !ok {
-		return m
-	}
-	_, ok = blockingTiles[nextTile]
+	nextTile := m.GetTile(position.Position{X: m.position.X + distance, Y: m.position.Y})
+	_, ok := blockingTiles[nextTile]
 	if ok {
 		return m
 	}

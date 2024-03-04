@@ -3,7 +3,7 @@ module term-ex
 go 1.21.5
 
 require (
-	github.com/deckarep/golang-set/v2 v2.5.0
+	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/spf13/cobra v1.8.0
 )
 
